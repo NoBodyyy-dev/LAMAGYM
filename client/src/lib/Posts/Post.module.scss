@@ -1,0 +1,18 @@
+@import url("../../styles/colors.css");
+
+.posts {
+  width: 100%;
+
+  &Item {
+    max-width: 470px;
+    width: 100%;
+    min-height: 350px;
+    border-radius: 5px;
+    border: var(--border-solid-green);
+  }
+
+  &Text {
+    color: red;
+  }
+
+}

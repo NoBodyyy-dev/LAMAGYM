@@ -1,0 +1,12 @@
+:root {
+    --body-color: #eeeeee;
+    --main-color-prpl: #6C5BD8;
+    --main-color-prpl-active: #9286e0;
+    --main-color-green: #78B49E;
+    --border-solid-green: solid var(--main-color-green);
+    --border-solid-prpl: solid var(--main-color-prpl);
+    --empty-grey: #9b9b9b;
+    --calc-height: calc(100vh - var(--header-height));
+    --content-width: 1200px;
+    --header-height: 65px;
+}

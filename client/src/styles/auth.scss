@@ -1,0 +1,15 @@
+.auth {
+    width: 600px;
+    height: 400px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 30px 50px;
+    border: 1px solid var(--main-color-prpl);
+
+    &__container {
+        width: 100%;
+        height: 100%;
+        // border: 1px solid #000;
+    }
+
+}

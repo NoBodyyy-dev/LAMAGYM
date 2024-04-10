@@ -1,0 +1,23 @@
+.modalBg {
+    background: #00000076;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100vh;    
+    z-index: 10;
+    display: none;
+
+    &.active {
+        display: flex;
+    }
+}
+
+.bigModal {
+    background: #fff;
+    padding: 20px;
+    max-width: 600px;
+    min-height: 180px;
+    border-radius: 20px;
+    text-align: center;
+}

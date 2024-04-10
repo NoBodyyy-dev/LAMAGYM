@@ -1,0 +1,15 @@
+@import url("../../styles/colors.css");
+
+.inputMain {
+  border: 1px solid var(--main-color-prpl);
+  padding: 8px 15px;
+  border-radius: 5px;
+  min-width: 320px;
+  width: 100%;
+  outline: none;
+  // margin-bottom: 20px;
+  
+  &::placeholder {
+    color: var(--main-color-prpl);
+  }
+}
