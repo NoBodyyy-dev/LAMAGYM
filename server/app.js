@@ -1,13 +1,17 @@
 // imports
-const mongoose = require("mongoose");
 const express = require("express");
+const mongoose = require("mongoose");
 const socketIO = require("socket.io");
 const http = require("http");
 const cors = require("cors");
-const bp = require('body-parser')
+const bp = require("body-parser");
+const cookieParser = require("cookie-parser");
+const router = require("./router/router");
+require("dotenv").config();
 
 // server
-const URL = "mongodb://83.239.75.58:17027/Dmitry";
+const URL = process.env.DB_URL;
+const PORT = process.env.PORT || 5000;
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
@@ -15,40 +19,40 @@ const io = socketIO(server);
 // app.use
 app.use(express.json());
 app.use(cors());
-app.use(bp.json())
-app.use(bp.urlencoded({ extended: true }))
+app.use(cookieParser());
+app.use("/api", router);
+app.use(bp.json());
+app.use(bp.urlencoded({ extended: true }));
 
-// users
-const userSchema = require("./models/UserSchema");
-const User = mongoose.model("User", userSchema);
+// userModel
+const User = require("./models/UserModel");
 
 // get all users
 app.get("/user/getAll", async (req, res) => {
-    try {
-        const allUsers = await User.find({})
-        res.json(allUsers)
-    } catch (error) {
-        console.log(error);
-        res.status(500)
-    }
-})
+  try {
+    const allUsers = await User.find({});
+    res.json(allUsers);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+});
 
 // get user login details
 app.get("/user/login", async (req, res) => {
-    try {
-        const allUsers = await User.find({
-            username: req.body.username, 
-            email: req.body.email
-        })
-        res.json(allUsers)
-    } catch (error) {
-        console.log(error);
-        res.status(500)
-    }
-})
+  try {
+    const allUsers = await User.find({
+      username: req.body.username,
+      email: req.body.email,
+    });
+    res.json(allUsers);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+});
 
-
-// create user  
+// create user
 app.post("/user/create", async (req, res) => {
   console.log(req.body);
   if (!req.body) return res.sendStatus(400);
@@ -82,9 +86,8 @@ app.post("/user/create", async (req, res) => {
 async function run() {
   try {
     await mongoose.connect(URL);
-    console.log("Успешное подключение к базе данных");
-    server.listen(3000);
-    console.log("Сервер запущен на http://localhost:3000");
+    server.listen(PORT);
+    console.log(`Сервер запущен на http://localhost:${PORT}`);
   } catch (error) {
     console.log(error);
   }
