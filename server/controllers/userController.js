@@ -1,57 +1,88 @@
-const userService = require("../service/userService");
-const UserService = require("../service/userService");
+const APIError = require("../utils/error")
 
-class UserController {
-  async registrationFunc(req, res, next) {
+const bcrypt = require("bcrypt")
+const {validationResult} = require("express-validator")
+
+const {generateToken, saveToken} = require("../utils/jwt")
+const User = require("../models/User")
+const {secret} = require("../config/config")
+const UserDto = require("../dto/userDto")
+
+const controller = {}
+
+controller.registration = async (req, res, next) => {
     try {
-      const { email, password, username } = req.body;
-      const userData = await userService.registration(username, email, password);
-      res.cookie("refreshToken", userData.refreshToken, {
-        maxAge: 30 * 24 * 3600 * 1000,
-        httpOnly: true,
-      });
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) return next(APIError.BadRequests("Ошибка валидации"), errors.array())
 
-      return res.json(userData);
-    } catch (e) {
-      console.log(e);
-    }
-  }
+        const {username, email, password, image} = req.body
+        const findUserByUsername = await User.findOne({username})
+        const findUserByEmail = await User.findOne({email})
 
-  async loginFunc(req, res, next) {
-    try {
-    } catch (e) {
-      console.log(e);
-    }
-  }
+        if (findUserByUsername) return next(APIError.BadRequests("Пользователь с таким именем уже существует"), errors.array())
+        if (findUserByEmail) return next(APIError.BadRequests("Пользователь с таким адресом эл. почты уже существует"), errors.array())
 
-  async logoutFunc(req, res, next) {
-    try {
-    } catch (e) {
-      console.log(e);
-    }
-  }
+        const hashPassword = bcrypt.hashSync(password, 7)
 
-  async activateFunc(req, res, next) {
-    try {
-    } catch (e) {
-      console.log(e);
-    }
-  }
+        const newUser = await User.create({
+            username, email: email.toLowerCase(), password: hashPassword, image
+        })
 
-  async refreshFunc(req, res, next) {
-    try {
+        const userData = newUser
+        const userDto = new UserDto(newUser)
+        const tokens = generateToken({...userDto})
+        await saveToken(userDto.id, tokens.refreshToken)
+        const maxAge = Number(process.env.JWT_LIVE.replace("d", "")) * 24 * 60 * 60 * 1000
+        res.cookie('refreshToken', tokens.refreshToken, {maxAge: maxAge, httpOnly: true, secure: true})
+        res.cookie('test', "test", {maxAge: 1000 * 60, httpOnly: true, secure: true})
+        
+        res.json({userData, tokens})
     } catch (e) {
-      console.log(e);
+        next(e)
     }
-  }
-
-  async getAllUsersFunc(req, res, next) {
-    try {
-      res.json(["123", "456"]);
-    } catch (e) {
-      console.log(e);
-    }
-  }
 }
 
-module.exports = new UserController();
+controller.login = async (req, res, next) => {
+    try {
+        const {username, email, password} = req.body
+        const findUserByUsername = await User.findOne({username})
+        const findUserByEmail = await User.findOne({email})
+        if (!findUserByUsername) return next(APIError.BadRequests("Пользователь с таким именем не найден"))
+        if (!findUserByEmail) return next(APIError.BadRequests("Пользователь с таким именем почты не найден"))
+
+        const validPassword = bcrypt.compareSync(password, findUserByUsername.password)
+        if (!validPassword) return next(APIError.BadRequests("Неправильно введен пароль"))
+        const userData = findUserByUsername
+        const useDto = new UserDto(userData)
+        const tokens = generateToken({...useDto})
+        await saveToken(useDto.id, tokens.refreshToken)
+
+        const maxAge = Number(process.env.JWT_LIVE.replace("d", "")) * 24 * 60 * 60 * 1000
+        res.cookie("refreshToken", tokens.refreshToken, {maxAge: maxAge, httpOnly: true, secure: true})
+        res.cookie("test", "test", {maxAge: 1000 * 60, httpOnly: true, secure: true})
+
+        return res.json({userData, tokens})
+    } catch (e) {
+        next(e)
+    }
+}
+
+controller.logout = async (req, res, next) => {
+    try {
+        const {refreshToken} = req.cookies
+        // const token = await
+    } catch (e) {
+
+    }
+}
+
+controller.getAllUsers = async (req, res, next) => {
+    try {
+        const allUsers = await User.find()
+        res.json(allUsers)
+    } catch (e) {
+        next(e)
+    }
+}
+
+module.exports = controller

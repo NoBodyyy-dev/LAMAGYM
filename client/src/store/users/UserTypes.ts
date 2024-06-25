@@ -1,11 +1,18 @@
+export type ReportData = {
+    reportName: string,
+    reportedUsers: string,
+}
+
 export type USER_DATA = Partial<{
-    id: number,
+    id: string,
     username: string,
     email: string,
-    firstName: string,
-    lastName: string,
-    gender: string,
-    image: string
+    banned: boolean,
+    countSubscribers: number,
+    reports: ReportData[],
+    subOn: string[],
+    tags: string[],
+
 }>
 
 export type USER_STATE = {
