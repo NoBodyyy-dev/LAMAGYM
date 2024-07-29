@@ -1,13 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userSlice from "./users/userSlice";
-import BlogSlice from "./blog/BlogSlice";
-import feedSlice from "./feed/feedSlice";
+import userSlice from "./slices/userSlice";
+import blogSlice from "./slices/blogSlice.ts";
 
 export const store = configureStore({
     reducer: {
         user: userSlice,
-        blog: BlogSlice,
-        feed: feedSlice,
+        blog: blogSlice,
     }
 })
 

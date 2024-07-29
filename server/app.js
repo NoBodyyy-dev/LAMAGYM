@@ -3,32 +3,54 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const http = require("http");
-const cors = require("cors")
+const {Server} = require("socket.io");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const errorMiddleware = require("./middlewares/errorMiddleware");
 const router = require("./router/index");
-const cookieParser = require("cookie-parser")
-const errorMiddleware = require("./middlewares/errorMiddleware")
+const io = require("./socket/socket")
+const {clientUrl, port, dbUrl, socketPort} = require("./config/config")
 
 // server
-const URL = process.env.DB_URL;
-const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 
 // app.use
 app.use(express.json());
-app.use(cookieParser())
-app.use(cors())
+app.use(cookieParser());
+app.use(cors({
+    origin: clientUrl,
+    credentials: true,
+}));
 app.use("/api", router);
-app.use(errorMiddleware)
+app.use(errorMiddleware);
+
+// const io = new Server(server, {
+//     cors: {
+//         origin: "*",
+//         methods: ["GET", "POST", "PUT", "Delete"],
+//     }
+// });
+//
+// io.on("connection", (socket) => {
+//     socket.on("join", ({name, room}) => {
+//         socket.join(room)
+//         socket.broadcast.to()
+//     })
+//
+//
+//     io.on("disconnect", () => console.log("Disconnected"));
+// })
 
 // run app
 async function run() {
     try {
-        await mongoose.connect(URL);
-        server.listen(PORT);
-        console.log(`Сервер запущен на http://localhost:${PORT}`);
-    } catch (error) {
-        console.log(error);
+        await mongoose.connect(dbUrl);
+        server.listen(port);
+        io.listen(socketPort);
+        console.log(`Сервер запущен на http://localhost:${port}`);
+    } catch (e) {
+        console.log(e);
     }
 }
 

@@ -1,13 +1,24 @@
 @import url(https://fonts.googleapis.com/css?family=Montserrat:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
-@import './colors.css';
-@import 'global';
-@import 'scrollbar';
+@import "./colors.css";
+@import "global";
+@import "scrollbar";
+@import "elements";
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Montserrat", sans-serif;
+
+  ::selection {
+    background: var(--main-color-green); /* Safari */
+    color: #fff;
+  }
+
+  ::-moz-selection {
+    background: var(--main-color-green); /* Firefox */
+    color: #fff;
+  }
 }
 
 //layout styles
@@ -24,6 +35,7 @@ body {
 
   &.full {
     height: 100vh;
+    padding: 0;
   }
 }
 
@@ -75,7 +87,7 @@ body {
   }
 
   &__user {
-    &:hover>&-username {
+    &:hover > &-username {
       text-decoration: underline;
     }
 
@@ -109,13 +121,13 @@ body {
 
       &__user {
         padding: 5px;
-        transition: all .2s;
+        transition: all 0.2s;
 
         &:hover {
           background: var(--body-color);
         }
 
-        &:hover>.search__modal__user-username {
+        &:hover > .search__modal__user-username {
           color: var(--main-color-prpl);
         }
 

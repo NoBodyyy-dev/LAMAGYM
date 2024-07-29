@@ -1,15 +1,38 @@
 .auth {
-    width: 600px;
-    height: 400px;
-    background: #fff;
-    border-radius: 10px;
-    padding: 30px 50px;
-    border: 1px solid var(--main-color-prpl);
+  width: 600px;
+  height: 400px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px 50px;
+  border: 1px solid var(--main-color-prpl);
 
-    &__container {
-        width: 100%;
-        height: 100%;
-        // border: 1px solid #000;
+  &-back {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    color: var(--main-color-prpl);
+    transition: all .3s;
+
+    &:hover {
+        color: #000;
+    }
+  }
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    // border: 1px solid #000;
+  }
+
+  .form {
+    &__field {
+      &-input {
+        margin-top: 15px;
+      }
     }
 
+    &__more {
+        cursor: default;
+    }
+  }
 }

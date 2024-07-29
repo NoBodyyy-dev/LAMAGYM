@@ -3,15 +3,14 @@ const router = require('express').Router();
 // static resource routes
 const authRoutes = require('./userRouter');
 const postRoutes = require('./postRouter');
-// const commentRoutes = require('./commentRouter');
-// const userRoutes = require('./userRouter');
-
-// dynamic resource routes
-// no-dynamic-routes
+const subRoutes = require('./subRouter');
+const messageRoutes = require('./messageRouter');
+const commentRoutes = require('./commentRouter');
 
 router.use('/user', authRoutes);
-router.use('/posts', postRoutes);
-// router.use(['/comment', '/comments'], commentRoutes);
-// router.use(['/user', '/users'], userRoutes);
+router.use('/post', postRoutes);
+router.use('/sub', subRoutes)
+router.use('/message', messageRoutes);
+router.use('/comment', commentRoutes)
 
 module.exports = router;
