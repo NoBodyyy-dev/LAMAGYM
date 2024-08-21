@@ -9,20 +9,25 @@ controller.createSub = async (req, res, next) => {
     try {
         catchErrors(req, res, next)
 
-        const {title, description, price, level, subAction} = req.body;
+        const {title, description, price, level} = req.body;
         const user = req.user
 
         const findUser = await User.findOne({_id: user.id});
-        if (level > findUser.subsOwner.length && findUser.subsOwner.length) return next(APIError.BadRequests("Недопустимый уровень подписки"));
+        if (level > findUser.subsOwner.length + 1 && findUser.subsOwner.length) {
+            return next(APIError.BadRequests("Недопустимый уровень подписки"))
+        }
         else {
+            console.log(findUser.subsOwner.length)
             const newSub = await Sub.create({
                 creatorId: user.id,
+                creatorName: user.username,
                 title: title,
                 description: description,
                 price: price,
-                level: level,
-                subAction: subAction,
+                level: findUser.subsOwner.length + 1,
             });
+            findUser.subsOwner.push(newSub._id)
+            await findUser.save()
             return res.json(newSub);
         }
     } catch (e) {
@@ -34,7 +39,7 @@ controller.updateSub = async (req, res, next) => {
     try {
         catchErrors(req, res, next)
 
-        const {description, price, subAction} = req.body;
+        const {description, price, subAction, level} = req.body;
         const {subId} = req.params
         const user = req.user
 
@@ -57,9 +62,10 @@ controller.updateSub = async (req, res, next) => {
 
 controller.getUserSubs = async (req, res, next) => {
     try {
-        const {creatorId} = req.params;
-        const userSubs = await Sub.find({creatorId: creatorId});
-        return res.json(userSubs);
+        const {name} = req.params;
+        const userSubs = await Sub.find({creatorName: name});
+        if (userSubs.length) return res.json(userSubs);
+        return res.json([]);
     } catch (e) {
         next(e)
     }

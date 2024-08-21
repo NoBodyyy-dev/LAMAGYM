@@ -1,7 +1,5 @@
 const {validationResult} = require("express-validator");
-const mongoose = require("mongoose");
 const {jwtRefreshLive} = require("../config/config")
-const UserDto = require("../dto/userDto");
 const APIError = require("./error");
 const Token = require("../models/Token");
 const User = require("../models/User");
@@ -24,13 +22,14 @@ utils.findUserWithId = async (id, next) => {
 };
 utils.me = async (req, res, next) => {
     try {
-        console.log(">>>", req.headers)
         const getMe = await Token.findOne({refreshToken: req.cookies.refreshToken});
         return await User.findOne({_id: getMe.userId});
     } catch (e) {
         next(e);
     }
 };
+utils.arrayPagination = (posts, page) => Array(...posts).slice(10 * page - 10, 10 * page)
 utils.arrayElemsToLowerCase = (arr) => arr.map((el) => el.toLowerCase())
+utils.arrayElemsToString = (arr) => arr.map((el) => el.toString())
 
 module.exports = utils

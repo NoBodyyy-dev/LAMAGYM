@@ -7,22 +7,28 @@ const {
     saveToken,
     removeToken,
     validateRefreshToken,
-    findToken
+    validateAccessToken
 } = require("../utils/jwt")
 const User = require("../models/User")
 const Token = require("../models/Token")
-const {maxRefreshTokenAge, findUserWithId, catchErrors} = require("../utils/utils")
+const {maxRefreshTokenAge, unique, catchErrors, arrayElemsToString} = require("../utils/utils")
 const UserDto = require("../dto/userDto")
+const {compareSync} = require("bcrypt");
 
 const controller = {}
 
 controller.registration = async (req, res, next) => {
     try {
         catchErrors(req, res, next);
+        console.log(req.body)
 
         const {username, email, password, image} = req.body;
-        const findUserByUsername = await User.findOne({username});
-        const findUserByEmail = await User.findOne({email});
+        const findUserByUsername = await User
+            .findOne()
+            .where("username").equals(username);
+        const findUserByEmail = await User
+            .findOne()
+            .where("email").equals(email);
 
         if (findUserByUsername) return next(APIError.BadRequests("Пользователь с таким именем уже существует"));
         if (findUserByEmail) return next(APIError.BadRequests("Пользователь с таким адресом эл. почты уже существует"));
@@ -39,6 +45,7 @@ controller.registration = async (req, res, next) => {
         const userDto = new UserDto(newUser)
         const tokens = generateToken({...userDto})
         await saveToken(userDto.id, tokens.refreshToken)
+        console.log(tokens)
 
         res.cookie('refreshToken', tokens.refreshToken, {maxAge: maxRefreshTokenAge, httpOnly: true})
 
@@ -76,15 +83,45 @@ controller.login = async (req, res, next) => {
 
 controller.subOnUser = async (req, res, next) => {
     try {
-        const {curUserId, userId, tags} = req.body;
-        const findUser = await User.findOne({_id: curUserId})
-        const newTags = unique([...findUser.tags, ...tags]);
-        const newSub = [...findUser.subsOnUsers, userId];
+        const {userName} = req.body;
+        const user = req.user;
+        const findUser = await User
+            .findOne()
+            .where("_id").equals(user.id)
+        const findGetSubUser = await User
+            .findOne()
+            .where("username").equals(userName)
+        findGetSubUser.countSubscribers++
 
-        await User.findOneAndUpdate({_id: userId}, {
-            tags: newTags,
-            subsOnUsers: newSub
-        })
+        const newTags = unique([...findUser.tags, ...findGetSubUser.tags]);
+        const newSub = [...findUser.subsOnUsers, findGetSubUser._id];
+
+        findUser.tags = newTags
+        findUser.subsOnUsers = newSub
+        await Promise.all([findUser.save(), findGetSubUser.save()])
+
+        return res.json(findUser._id)
+    } catch (e) {
+        next(e);
+    }
+}
+
+controller.unsubOnUser = async (req, res, next) => {
+    try {
+        const {userName} = req.body;
+        const user = req.user;
+        const findUser = await User
+            .findOne()
+            .where("_id").equals(user.id)
+        const findGetSubUser = await User
+            .findOne()
+            .where("username").equals(userName)
+        findGetSubUser.countSubscribers--
+        findUser.subsOnUsers = findUser.subsOnUsers.filter((id) => String(id) !== String(findGetSubUser._id))
+        await Promise.all([findUser.save(), findGetSubUser.save()])
+
+
+        return res.json(findGetSubUser._id)
     } catch (e) {
         next(e);
     }
@@ -107,11 +144,15 @@ controller.refresh = async (req, res, next) => {
         const {refreshToken} = req.cookies;
         if (!refreshToken) return next(APIError.UnauthorizedError());
         const userData = validateRefreshToken(refreshToken);
-        const tokenFromDB = await Token.findOne({refreshToken});
+        const tokenFromDB = await Token
+            .findOne()
+            .where("refreshToken").equals(refreshToken)
         if (!userData || !tokenFromDB) return next(APIError.UnauthorizedError());
 
         const {username} = await userData;
-        const user = await User.findOne({username: username});
+        const user = await User
+            .findOne()
+            .where("username").equals(username)
         const userDto = new UserDto(user);
         const tokens = generateToken({...userDto});
         await saveToken(userDto.id, tokens.refreshToken);
@@ -124,10 +165,35 @@ controller.refresh = async (req, res, next) => {
     }
 };
 
+
+controller.updateUser = async (req, res, next) => {
+    try {
+        const {image, _id} = req.body
+        const user = req.user;
+        if (_id === req.user.id ) {
+            const updateUser = await User
+                .findOne()
+                .where("_id").equals(user.id)
+
+            updateUser.image = image
+            await updateUser.save()
+            console.log(updateUser)
+            return res.json(updateUser)
+        } else {
+            return next(APIError.ForbiddenError(`Пользователь ${req.body.id} не может поменять данные пользователя ${req.user.id}`))
+        }
+    } catch (e) {
+        next(e)
+    }
+}
+
 controller.getProfileInfo = async (req, res, next) => {
     try {
-        const profileInfo = await User.findOne({_id: req.params.id})
-        return res.json(profileInfo)
+        const profileInfo = await User
+            .findOne()
+            .where("username").equals(req.params.username)
+            .select("-password")
+        return res.json({userData: profileInfo})
     } catch (e) {
         next(e)
     }
@@ -136,40 +202,32 @@ controller.getProfileInfo = async (req, res, next) => {
 controller.me = async (req, res, next) => {
     try {
         const user = await req.user
-        console.log(user)
-        const findUser = await User.findOne({_id: user.id})
+        const findUser = await User
+            .findOne()
+            .where("_id").equals(user.id)
+            .select("-password")
         return res.json(findUser)
     } catch (e) {
         next(e)
     }
 };
 
-controller.updateUser = async (req, res, next) => {
-    try {
-        catchErrors(req, res, next)
-
-        const {username, email, password, image} = req.body
-        if (req.params.id === req.user.id) {
-            const updateUser = await User.findOneAndUpdate({_id: req.user.id}, {
-                username: username,
-                email: email,
-                password: bcrypt.hashSync(password, 7),
-                image: image
-            })
-
-            return res.json(updateUser)
-        } else {
-            return next(APIError.ForbiddenError(`Пользователь ${req.user.id} не может поменять данные пользователя ${req.params.id}`))
-        }
-    } catch (e) {
-        next(e)
-    }
-}
-
 controller.getAllUsers = async (req, res, next) => {
     try {
-        const allUsers = await User.find()
-        return res.json(allUsers)
+        const tokenInfo = await validateAccessToken(req.headers.authorization.split(' ')[1]);
+        if (!req.headers.authorization || tokenInfo === null) {
+            const allUsers = await User.find()
+            return res.json(allUsers.map(user => {
+                return {username: user.username, image: user.image}
+            }))
+        } else {
+            const allUsers = await User
+                .find()
+                .where("_id").equals({$ne: tokenInfo.id})
+            return res.json(allUsers.map(user => {
+                return {username: user.username, image: user.image}
+            }))
+        }
     } catch (e) {
         next(e)
     }

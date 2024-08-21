@@ -19,6 +19,6 @@ subRouter.put("/updateSub/:subId", [
     authMiddleware
 ], updateSub)
 
-subRouter.get("/subsUser/:creatorId", getUserSubs)
+subRouter.get("/subsUser/:name", getUserSubs)
 
 module.exports = subRouter

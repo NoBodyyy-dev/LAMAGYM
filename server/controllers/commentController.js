@@ -1,6 +1,8 @@
 const APIError = require('../utils/error');
-const Comment = require('../models/Comment');
 const {catchErrors} = require("../utils/utils")
+
+const Comment = require('../models/Comment');
+const Post = require('../models/Post');
 
 const controller = {}
 
@@ -8,16 +10,26 @@ controller.createComment = async (req, res, next) => {
     try {
         catchErrors(req, res, next)
 
-        const {postId, text} = req.body;
+        const {postId} = req.params
+        const {text} = req.body;
         const user = req.user
 
-        const createComment = await Comment.create({
-            userId: user.id,
+        const findPost = await Post
+            .findOne()
+            .where("_id").equals(postId)
+        console.log(findPost)
+
+        const createComment = new Comment({
+            user: user.id,
             postId: postId,
             text: text,
         })
 
-        return res.json(createComment)
+        createComment && findPost.comments.push(createComment._id)
+
+        await Promise.all([findPost.save(), createComment.save()])
+
+        return res.json({comment: createComment})
     } catch (e) {
         next(e)
     }
@@ -61,11 +73,12 @@ controller.deleteComment = async (req, res, next) => {
 
 controller.getPostComment = async (req, res, next) => {
     try {
-        const findComments = await Comment.find({
-            postId: req.params.postId,
-        })
+        const findComments = await Comment
+            .find()
+            .where("postId").equals(req.params.postId)
+            .populate("user", "username image role")
 
-        return res.json(findComments)
+        return res.json({comments: findComments})
     } catch (e) {
         next(e)
     }

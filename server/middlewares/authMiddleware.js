@@ -4,7 +4,6 @@ const {validateAccessToken} = require("../utils/jwt")
 
 module.exports = async (req, res, next) => {
     try {
-        console.log('CVDSDDddddddddvjdnmdfnbsdkfnbsjkdfbjdb', req.headers)
         const authHeader = req.headers.authorization;
         if (!authHeader) return next(APIError.UnauthorizedError());
 

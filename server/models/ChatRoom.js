@@ -1,7 +1,8 @@
 const {Schema, model} = require('mongoose');
 
 const ChatRoom = new Schema({
-    members: {type: Array(Schema.Types.ObjectId), ref: "User", length: {min: 2}}
-})
+    participants: {type: Array(Schema.Types.ObjectId), ref: 'User'},
+    messages: {type: Array(Schema.Types.ObjectId), ref: 'Message', default: []},
+}, {timestamps: true});
 
 module.exports = model("ChatRoom", ChatRoom);

@@ -5,12 +5,10 @@ const {check} = require("express-validator")
 
 const commentRouter = new Router();
 
-commentRouter.post("/createComment", [
+commentRouter.post("/createComment/:postId", [
     check("text", "Комментарий не должен быть пустым").trim().notEmpty(),
     authMiddleware
 ], createComment);
-
-commentRouter.get("/getPostComment/:postId", getPostComment);
 
 commentRouter.put("/updateComment/:commentId", [
     check("text", "Комментарий не должен быть пустым").trim().notEmpty(),
@@ -18,5 +16,7 @@ commentRouter.put("/updateComment/:commentId", [
 ], updateComment);
 
 commentRouter.delete("/deleteComment/:commentId", authMiddleware, deleteComment);
+
+commentRouter.get("/getPostComment/:postId", getPostComment);
 
 module.exports = commentRouter

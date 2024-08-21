@@ -1,6 +1,6 @@
 const Router = require("express")
 const postRouter = new Router()
-const {createPost, getAllPosts, updatePost, deletePost} = require("../controllers/postController")
+const {createPost, getAllPosts, updatePost, deletePost, getUserPosts, getAllTags, likePost} = require("../controllers/postController")
 const authMiddleware = require("../middlewares/authMiddleware")
 const {check} = require("express-validator")
 
@@ -11,7 +11,7 @@ postRouter.post("/createPost", [
     authMiddleware
 ], createPost)
 
-// postRouter.post()
+postRouter.post("/like", authMiddleware, likePost)
 
 postRouter.put("/updatePost/:postId", [
     check("body", "Тело поста не может быть пустым").trim().notEmpty(),
@@ -22,5 +22,7 @@ postRouter.put("/updatePost/:postId", [
 postRouter.delete("/deletePost/:postId", authMiddleware, deletePost)
 
 postRouter.get("/all/:page", getAllPosts)
+postRouter.get("/tags", getAllTags)
+postRouter.get("/posts/:username/:page", getUserPosts)
 
 module.exports = postRouter
