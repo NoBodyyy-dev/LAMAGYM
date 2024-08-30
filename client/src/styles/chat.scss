@@ -1,0 +1,163 @@
+.chat {
+  width: 100%;
+  display: flex;
+  min-height: 100%;
+
+  &__users {
+    width: 100%;
+
+    &__block {
+      width: 100%;
+      height: 60px;
+      padding: 8px;
+      background: #fff;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        background: #ddd;
+      }
+
+      &-image {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+      }
+
+      &__text {
+        margin-left: 20px;
+
+        &-last-msg {
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          font-size: 10px;
+        }
+      }
+
+      &-time {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+      }
+    }
+  }
+}
+
+.messages {
+  background: #fff;
+  height: calc(100vh - 80px - 10px);
+  border-radius: 10px 10px 0 0;
+  position: relative;
+  display: block;
+
+  &__user {
+    z-index: 3;
+    border-radius: 10px 10px 0 0;
+    padding: 0 30px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    position: sticky;
+    top: var(--header-height);
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 7px 7px rgba(0, 0, 0, 0.11);
+
+    &-back {
+      align-self: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .2s;
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+
+    &__data {
+      justify-content: center;
+      height: 65px;;
+
+      &-username {
+        &:hover {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+      }
+
+      &-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 80%;
+    overflow: hidden;
+    padding-bottom: 20px;
+
+    &__scroll {
+      padding: 30px 30px 0;
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
+
+  &__block {
+    padding: 8px 15px 20px;
+    width: max-content;
+    max-width: 400px;
+    min-width: 90px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    position: relative;
+    word-break: break-all;
+
+    &-time {
+      position: absolute;
+      bottom: 4px;
+      font-size: 10px;
+    }
+
+    &.cur--user {
+      background: var(--main-color-prpl);
+      color: #fff;
+      align-self: end;
+      text-align: right;
+
+      & > .messages__block-time {
+        right: 15px;
+        bottom: 4px;
+        color: #ddd;
+      }
+    }
+
+    &.chat--user {
+      background: #ddd;
+    }
+  }
+
+  &__field {
+    position: absolute;
+    //min-height: 30px;
+    bottom: 0;
+    max-width: 830px;
+    width: 100%;
+
+    &-send {
+      align-self: end;
+    }
+  }
+}

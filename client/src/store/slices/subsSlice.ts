@@ -1,7 +1,8 @@
-import {createSlice} from "@reduxjs/toolkit"
-import {getUserSubsHandler} from "../handlers/subsHandlers.ts";
+import {ActionReducerMapBuilder, createSlice} from "@reduxjs/toolkit"
+import {createSubHandler, getUserSubsHandler, updateSubHandler} from "../handlers/subsHandlers.ts";
+import {SubState} from "../types/subTypes.ts";
 
-const initialState = {
+const initialState: SubState = {
     subs: [],
     isLoadingSubs: false,
     isSuccess: false,
@@ -12,8 +13,10 @@ const subsSlice = createSlice({
     name: "subs",
     initialState,
     reducers: {},
-    extraReducers(builder) {
-        getUserSubsHandler(builder)
+    extraReducers(builder: ActionReducerMapBuilder<SubState>) {
+        getUserSubsHandler(builder);
+        createSubHandler(builder);
+        updateSubHandler(builder);
     }
 })
 

@@ -5,10 +5,12 @@ import {useAppDispatch, useAppSelector} from "./hooks/stateHooks";
 import {getMe} from "./store/actions/userActions";
 import Header from "./lib/header/Header";
 import Aside from "./lib/aside/Aside";
+import {setOnlineUsers, setSocketConnection} from "./store/slices/userSlice.ts";
 
 const names: any = {
     "/": "Главная",
     "/auth": "Авторизация",
+    "/chat": "Чат"
 };
 
 function Layout() {
@@ -17,11 +19,14 @@ function Layout() {
     const location = useLocation();
 
     const [wrapperClasses, setWrapperClasses] = useState<string[]>(["wrapper"]);
-    const [socket, setSocket] = useState<Socket>();
 
     useEffect(() => {
         token && dispatch(getMe())
     }, [token]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location.pathname]);
 
     useEffect(() => {
         if (location.pathname in names) document.title = names[location.pathname];
@@ -30,18 +35,23 @@ function Layout() {
     }, [location.pathname]);
 
     useEffect(() => {
-        const newSocket = io("http://localhost:3001");
-        setSocket(newSocket);
+        if (curUser?._id) {
+            const socket: Socket = io("http://localhost:3000", {
+                auth: {
+                    token: localStorage.getItem("token"),
+                },
+            });
 
-        return () => {
-            newSocket.disconnect();
+            socket.on("onlineUser", (data) => {
+                dispatch(setOnlineUsers(data))
+            })
+            dispatch(setSocketConnection(socket))
+            return () => {
+                socket.disconnect()
+            }
         }
-    }, [curUser]);
+    }, [curUser?._id])
 
-    useEffect(() => {
-        if (!socket) return
-        socket.emit("")
-    }, [socket]);
 
     return (
         <>

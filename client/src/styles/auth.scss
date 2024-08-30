@@ -1,9 +1,9 @@
 .auth {
-  width: 600px;
-  height: 400px;
+  width: 400px;
+  height: max-content;
   background: #fff;
   border-radius: 10px;
-  padding: 30px 50px;
+  padding: 25px 40px;
   border: 1px solid var(--main-color-prpl);
 
   &-back {
@@ -24,15 +24,34 @@
     // border: 1px solid #000;
   }
 
-  .form {
+  &__form {
+    grid-gap: 10px;
+    display: flex;
+    flex-direction: column;
+
     &__field {
       &-input {
         margin-top: 15px;
       }
     }
 
-    &__more {
-        cursor: default;
+    &-file {
+      width: 100%;
+      border: 1px solid var(--main-color-prpl);
+      background: #ddd;
+      border-radius: 5px;
+      padding: 5px;
+      text-align: center;
+      font-size: 14px;
     }
+  }
+
+  &__change {
+    cursor: default;
+    margin: 15px 0;
+  }
+
+  &-submit {
+    width: 100%;
   }
 }

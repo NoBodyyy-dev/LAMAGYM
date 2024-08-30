@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {Link} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../hooks/stateHooks.ts";
 import {useSearchUsers} from "../../hooks/fieldHooks.ts";
@@ -23,14 +23,12 @@ const Header = () => {
     return (
         <header className="header">
             <div className="header__container flex-align-center-sbetw">
-                <Link to="/">
-                    <div className="header-logo"></div>
-                </Link>
+                <Link to="/"><div className="header-logo"></div></Link>
                 <div className="header__search">
                     <MainInput
                         placeholder="Поиск..."
                         value={search.query}
-                        onChange={(e: { target: { value: string } }) =>
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             setSearch({query: e.target.value})
                         }
                         onFocus={() => openModalFunc()}
@@ -38,11 +36,11 @@ const Header = () => {
                             setTimeout(() => {
                                 setOpenSearchModal(false);
                                 setSearch({query: ""});
-                            }, 100)
+                            }, 140)
                         }
                     />
                     {openSearchModal && (
-                        <SearchModal users={searchUsers}/>
+                        <SearchModal query={search.query} users={searchUsers}/>
                     )}
                 </div>
 

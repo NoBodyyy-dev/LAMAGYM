@@ -3,11 +3,36 @@
   align-items: center;
 }
 
+@mixin border {
+  border: solid 1px;
+}
+
+body.fixed-height {
+  overflow: hidden;
+  height: 100vh;
+}
+
 .title,
 h1.title {
   font-size: 24px;
   text-align: center;
   margin-bottom: 20px;
+
+  &.left {
+    text-align: left !important;
+  }
+}
+
+h1.subtitle {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+p.default {
+  text-align: left;
+  font-size: 14px;
 }
 
 .full-width {
@@ -60,6 +85,25 @@ a {
         justify-content: space-between;
       }
     }
+
+    &-start {
+      &-sbetw {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+}
+
+.border {
+  &-gray {
+    @include border;
+    border-color: #ddd !important;
+  }
+
+  &-prpl {
+    @include border;
+    border-color: var(--main-color-prpl) !important;
   }
 }
 
@@ -71,6 +115,24 @@ a {
 
   &-white {
     color: #fff;
+  }
+
+  &-gray {
+    color: #777;
+  }
+
+  &-prpl {
+    color: var(--main-color-prpl);
+  }
+
+  &-bold {
+    font-weight: bold;
+  }
+}
+
+.bg {
+  &-gray {
+    background: #dddddd !important;
   }
 }
 

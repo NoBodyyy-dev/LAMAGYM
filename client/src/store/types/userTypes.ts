@@ -7,7 +7,6 @@ export type UserData = Partial<{
     _id: string,
     username: string,
     email: string,
-    password: string,
     image: string,
     role: string,
     countSubscribers: number,
@@ -21,15 +20,27 @@ export type UserData = Partial<{
     isOnline: boolean,
 }>
 
+export type ShortUserData = {
+    _id: string,
+    username: string,
+    role: string,
+    image: string,
+    isOnline: boolean,
+    banned: boolean,
+}
+
 export type UserState = {
     curUser?: UserData,
     profileUser?: UserData,
+    countFollowers: string,
     isLoading: boolean,
     isLoadingSearchUsers: boolean,
     isSuccess: boolean,
     error: string,
     token: string
     allUsers: UserData[]
+    onlineUsers: string[],
+    socketConnection: any
 }
 
 export type FieldData = {

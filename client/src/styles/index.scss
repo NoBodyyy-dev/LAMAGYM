@@ -3,12 +3,16 @@
 @import "global";
 @import "scrollbar";
 @import "elements";
+@import "profile";
+@import "chat";
+@import "auth";
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Montserrat", sans-serif;
+  font-size: 12px;
 
   ::selection {
     background: var(--main-color-green); /* Safari */
@@ -150,6 +154,12 @@ body {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 40px;
+
+      &-item {
+        & > button {
+          width: 100%;
+        }
+      }
     }
   }
 }
@@ -158,6 +168,68 @@ body {
   width: 100%;
   min-height: calc(100vh - var(--header-height));
   padding-top: 20px;
+
+  &__container {
+    &.unauth {
+      display: grid;
+      grid-template-columns: 2fr 350px;
+    }
+
+    &__users {
+      padding-left: 50px;
+    }
+
+    .user {
+
+      &__top {
+        display: grid;
+        grid-template-columns: 70px 1fr;
+      }
+      &-rate {
+        width: 100%;
+        height: 70px;
+        font-size: 24px;
+        margin-right: 7px;
+        border-radius: 50%;
+
+        &._1 {
+          background: var(--main-color-prpl);
+          color: #fff;
+        }
+        &._2 {
+          background: var(--main-color-green);
+          color: #fff;
+        }
+        &._3 {
+          background: #ccc;
+        }
+      }
+      &__card {
+        width: 100%;
+        margin-left: 10px;
+        margin-bottom: 5px;
+        padding: 10px 0;
+        border-radius: 10px;
+        background: #fff;
+        transition: all .2s;
+
+        &:hover {
+          background: #dcdcdc;
+        }
+        
+        &-image {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+        }
+
+        &-username {
+          font-size: 18px;
+          margin: 5px 0;
+        }
+      }
+    }
+  }
 
   &.auth-user {
     margin-left: 270px;

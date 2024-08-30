@@ -1,33 +1,65 @@
-import {PostType} from "../../store/types/blogTypes"
+import { PostType } from "../../store/types/blogTypes";
+import PostHeader from "./PostHeader.tsx";
+import PostBody from "./PostBody.tsx";
+import PostIcons from "./PostIcons.tsx";
+import { UserData } from "../../store/types/userTypes.ts";
+import { memo, useEffect } from "react";
+import { useAppSelector } from "../../hooks/stateHooks.ts";
+import PostBlocked from "./PostBlocked.tsx";
 
 type Props = {
-    postData: PostType
-}
-
-const Post = (props: Props) => {
-    return (
-        <div className="post__container">
-            <p>{props.postData.userName}</p>
-            {props.postData.images.length
-            && (props.postData.images.length === 1)
-                ? <img src={props.postData.images[0]} alt={props.postData.images[0]}/>
-                : (<div className="post__images">
-                    {props.postData.images.map((image, index) => (
-                        <img src={image} alt={image} key={index} />
-                    ))}
-                </div>)
-            }
-            <div className="post-body">{props.postData.body}</div>
-            <div className="post__icons">
-                <div className="post__icons-likes">
-                    {"<3"} {props.postData.countLikes}
-                </div>
-                <div className="post__icons-comments">
-                    {"`{ }"}
-                </div>
-            </div>
-        </div>
-    );
+  postData: PostType;
+  curUser?: UserData;
 };
+
+const Post = memo((props: Props) => {
+  const { curUser } = useAppSelector((state) => state.user);
+
+  useEffect(() => {
+    console.log(props.postData);
+    
+  }, [])
+
+  return (
+    <div className="post">
+      <PostHeader
+        username={props.postData.userName}
+        image={props.postData.user.image}
+        createdAt={props.postData.createdAt}
+        id={props.postData.user._id}
+        subs={props.curUser?.subsOnUsers}
+        curSub={props.postData.subId}
+      />
+      {curUser!._id === props.postData.user._id ? (
+        <>
+          <PostBody
+            image={props.postData.image}
+            body={props.postData.body}
+            tags={props.postData.tags}
+          />
+          <PostIcons
+            _id={props.postData._id}
+            countLikes={props.postData.countLikes}
+          />
+        </>
+      ) : props.postData.subId === null ||
+        curUser?.purchasedSubs?.includes(props.postData.subId._id) ? (
+        <>
+          <PostBody
+            image={props.postData.image}
+            body={props.postData.body}
+            tags={props.postData.tags}
+          />
+          <PostIcons
+            _id={props.postData._id}
+            countLikes={props.postData.countLikes}
+          />
+        </>
+      ) : (
+        <PostBlocked username={props.postData.userName} />
+      )}
+    </div>
+  );
+});
 
 export default Post;

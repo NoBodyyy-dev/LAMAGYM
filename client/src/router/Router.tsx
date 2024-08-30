@@ -1,15 +1,15 @@
 import {RouterProvider, createBrowserRouter} from "react-router-dom";
 import Main from "../pages/main/Main.tsx";
-// import Profile from "../pages/Profile/Profile.tsx";
-// import NotFoud from "../pages/NotFound/NotFoud.tsx";
+import Profile from "../pages/profile/Profile.tsx";
 import Auth from "../pages/auth/Auth.tsx";
 import Layout from "../Layout.tsx";
+import Chat from "../pages/Chat/Chat.tsx";
+import MessagePage from "../pages/Chat/MessagePage.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <Layout/>,
-        // errorElement: <NotFoud />,
         children: [
             {
                 path: "/",
@@ -17,17 +17,23 @@ const router = createBrowserRouter([
             },
             {
                 path: "/auth",
-                element: <Auth />,
+                element: <Auth/>,
                 // errorElement: <NotFoud />,
             },
-        ]
-        //   {
-        //     path: "/profile/:profileId",
-        //     element: <Profile />,
-        //     errorElement: <NotFoud />,
-        //   },
-
-        // ],
+            {
+                path: "/profile/:username",
+                element: <Profile/>,
+                // errorElement: <NotFoud />,
+            },
+            {
+                path: "/chat",
+                element: <Chat />,
+            },
+            {
+                path: "/chat/:userId",
+                element: <MessagePage />
+            }
+        ],
     },
 ]);
 

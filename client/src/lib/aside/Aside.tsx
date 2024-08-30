@@ -3,7 +3,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks/stateHooks";
 import {Link, useNavigate} from "react-router-dom";
 import BigModal from "../modals/BigModal";
 import MainButton from "../button/MainButton";
-import {logoutFunc} from "../../store/slices/userSlice.ts";
+import {logoutFunc} from "../../store/actions/userActions";
 
 const Aside = () => {
     const dispatch = useAppDispatch();
@@ -21,8 +21,8 @@ const Aside = () => {
             name: "Профиль",
         },
         {
-            link: `/messenger`,
-            name: "Сообщения",
+            link: `/chat`,
+            name: "Чат",
         },
     ];
 
@@ -42,16 +42,22 @@ const Aside = () => {
                         </Link>
                     );
                 })}
-                <div className="aside-link" onClick={() => setOpenLogoutModal(true)}>Logout</div>
+                <div className="aside-link" onClick={() => setOpenLogoutModal(true)}>Выйти</div>
             </div>
             <BigModal modal={openLogoutModal} setModal={setOpenLogoutModal}>
                 <div className="header__modal">
                     <h1 className="title">Вы уверены что хотите выйти из аккаунта?</h1>
                     <div className="buttons__block">
-                        <MainButton onClick={() => setOpenLogoutModal(false)}>
+                        <MainButton className="buttons__block-item" onClick={() => setOpenLogoutModal(false)}>
                             Отмена
                         </MainButton>
-                        <MainButton onClick={() => logout()}>Выйти</MainButton>
+                        <form className="buttons__block-item" onSubmit={() => {
+                            setOpenLogoutModal(false)
+                            logout()
+                            console.log(openLogoutModal)
+                        }}>
+                            <MainButton>Выйти</MainButton>
+                        </form>
                     </div>
                 </div>
             </BigModal>

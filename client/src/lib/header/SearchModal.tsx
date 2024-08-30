@@ -5,27 +5,32 @@ import {UserData} from "../../store/types/userTypes";
 
 type Props = {
     users: UserData[];
-    // setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+    query: string
 };
 
 const SearchModal = memo((props: Props) => {
     const {isLoadingSearchUsers} = useAppSelector((state) => state.user);
 
     return (
-        <div className="search__modal">
+        <nav className="search__modal">
             {isLoadingSearchUsers ? (
                 "Загрузка..."
             ) : props.users.length ? (
-                props.users.map((user) => {
+                props.users.map((user, index) => {
                     return (
-                        <Link to={`/profile/${user.username}`} key={user._id}>
+                        <Link to={`/profile/${user.username}`} key={index}>
                             <div className="search__modal__user flex-align-center">
                                 <img
                                     src={user.image}
                                     alt={user.username}
                                     className="search__modal__user-logo"
                                 />
-                                <p className="search__modal__user-username">{user.username}</p>
+                                <p className="search__modal__user-username">
+                                    <span className="txt-bold txt-prpl">
+                                    {user.username?.slice(0, props.query.length)}
+                                    </span>
+                                    {user.username?.slice(props.query.length)}
+                                </p>
                             </div>
                         </Link>
                     );
@@ -33,7 +38,7 @@ const SearchModal = memo((props: Props) => {
             ) : (
                 <p className="txt-empty">Пользователь не найден</p>
             )}
-        </div>
+        </nav>
     );
 });
 
