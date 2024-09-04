@@ -13,6 +13,8 @@ controller.createComment = async (req, res, next) => {
         const {postId} = req.params
         const {text} = req.body;
         const user = req.user
+        console.log("<<", text);
+        console.log(">>", postId);
 
         const findPost = await Post
             .findOne()

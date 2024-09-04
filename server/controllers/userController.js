@@ -20,7 +20,6 @@ const controller = {}
 controller.registration = async (req, res, next) => {
     try {
         catchErrors(req, res, next);
-        console.log(req.body)
 
         const {username, email, password, image} = req.body;
         const findUserByUsername = await User
@@ -228,6 +227,15 @@ controller.getAllUsers = async (req, res, next) => {
                 return {username: user.username, image: user.image}
             }))
         }
+    } catch (e) {
+        next(e)
+    }
+}
+
+controller.getPopularUsers = async (req, res, next) => {
+    try {
+        const findUsers = await User.find().sort("-countSubscribers").limit(3)
+        return res.json({users: findUsers})
     } catch (e) {
         next(e)
     }

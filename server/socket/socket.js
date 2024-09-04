@@ -31,7 +31,7 @@ io.on("connection", async (socket) => {
     if (user === null) return APIError.UnauthorizedError();
 
     socket.join(user.id);
-    onlineUsers.add(user.id.toString());
+    onlineUsers.add(user.id.toString())
 
     io.emit("onlineUser", Array.from(onlineUsers));
 

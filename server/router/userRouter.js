@@ -10,7 +10,8 @@ const {
     me,
     updateUser,
     subOnUser,
-    unsubOnUser
+    unsubOnUser,
+    getPopularUsers
 } = require("../controllers/userController")
 const {check} = require("express-validator")
 const authMiddleware = require("../middlewares/authMiddleware")
@@ -34,6 +35,7 @@ userRouter.post("/logout", logout)
 userRouter.put("/updateUser", authMiddleware, updateUser)
 
 userRouter.get("/all", getAllUsers)
+userRouter.get("/popular", getPopularUsers)
 userRouter.get("/refresh", refresh)
 userRouter.get("/profile/:username", getProfileInfo)
 userRouter.get('/me', authMiddleware, me)

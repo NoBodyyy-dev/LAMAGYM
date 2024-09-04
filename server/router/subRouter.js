@@ -1,5 +1,5 @@
 const Router = require("express")
-const {createSub, getUserSubs, updateSub} = require("../controllers/subController")
+const {createSub, getUserSubs, updateSub, buySub} = require("../controllers/subController")
 const {check} = require("express-validator")
 const authMiddleware = require("../middlewares/authMiddleware")
 
@@ -11,6 +11,8 @@ subRouter.post("/createSub", [
     check("price", "Стоимость подписки меньше минимальной ставки").isInt({min: 100}),
     authMiddleware
 ], createSub)
+
+subRouter.post("/buy", authMiddleware, buySub)
 
 subRouter.put("/updateSub/:subId", [
     check("title", "Название подписки не должно быть пустым").trim().notEmpty(),
